@@ -1,1 +1,306 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Encrypt/Decrypt</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        textarea, input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #16213e;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #4a90d9;
+        }
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .encrypt-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .decrypt-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        .copy-btn {
+            background: #333;
+            color: #fff;
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+        .output-group {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #333;
+        }
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .output-label {
+            color: #aaa;
+            font-size: 14px;
+        }
+        #output {
+            background: #0f0f23;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            word-break: break-all;
+            min-height: 60px;
+            color: #4ade80;
+        }
+        #output.error {
+            color: #f87171;
+        }
+        .info {
+            margin-top: 30px;
+            padding: 16px;
+            background: #16213e;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #888;
+            border-left: 3px solid #4a90d9;
+        }
+        .info strong {
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 Text Encrypt/Decrypt</h1>
+    <p class="subtitle">AES-256-GCM encryption, runs entirely in your browser</p>
+
+    <div class="input-group">
+        <label for="data">Data (plain text or encrypted)</label>
+        <textarea id="data" placeholder="Enter text to encrypt, or paste encrypted text to decrypt..."></textarea>
+    </div>
+
+    <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password">
+    </div>
+
+    <div class="button-row">
+        <button class="encrypt-btn" onclick="encrypt()">🔒 Encrypt</button>
+        <button class="decrypt-btn" onclick="decrypt()">🔓 Decrypt</button>
+    </div>
+
+    <div class="output-group">
+        <div class="output-header">
+            <span class="output-label">Result</span>
+            <button class="copy-btn" onclick="copyOutput()">📋 Copy</button>
+        </div>
+        <div id="output">Result will appear here...</div>
+    </div>
+
+    <div class="info">
+        <strong>How it works:</strong> Uses AES-256-GCM encryption with PBKDF2 key derivation (100,000 iterations). 
+        Everything runs locally in your browser — no data is sent anywhere. 
+        The encrypted output is base64-encoded and safe to store as plain text.
+    </div>
+
+    <div class="info">
+        <strong>Phones:</strong> xiYRMOwj3GPfvD3WXasWfiFQU3hnqeZG6sl8FVIlIhGyW3BTh9Qhi6ExpPX6l5t8ZX1F23Y4Yr4YUOV+uzmjhLgKZ7y92I2dtI1pTQ+5mzxh9G4Cx0/TFdMrgT2lX38y0RC/kprHwThvw0gPlw8ZecQMEhGp9XkH8HCn90E8FhI7RJR/vO1BSx7Ri8L+OOxGh6sDuoYnuTIXlBqEJ1kcfB6qu2p0WK9tNidvVoBejPqSGo4=
+    </div>
+
+    <script>
+        const ITERATIONS = 100000;
+
+        async function deriveKey(password, salt) {
+            const encoder = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(password),
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            );
+            return crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: ITERATIONS,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        async function encrypt() {
+            const outputEl = document.getElementById('output');
+            outputEl.classList.remove('error');
+            
+            const data = document.getElementById('data').value;
+            const password = document.getElementById('password').value;
+
+            if (!data || !password) {
+                outputEl.textContent = 'Please enter both data and password';
+                outputEl.classList.add('error');
+                return;
+            }
+
+            try {
+                const encoder = new TextEncoder();
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+                const key = await deriveKey(password, salt);
+
+                const encrypted = await crypto.subtle.encrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    encoder.encode(data)
+                );
+
+                // Combine salt + iv + ciphertext
+                const combined = new Uint8Array(salt.length + iv.length + encrypted.byteLength);
+                combined.set(salt, 0);
+                combined.set(iv, salt.length);
+                combined.set(new Uint8Array(encrypted), salt.length + iv.length);
+
+                outputEl.textContent = arrayBufferToBase64(combined);
+            } catch (e) {
+                outputEl.textContent = 'Encryption failed: ' + e.message;
+                outputEl.classList.add('error');
+            }
+        }
+
+        async function decrypt() {
+            const outputEl = document.getElementById('output');
+            outputEl.classList.remove('error');
+            
+            const data = document.getElementById('data').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!data || !password) {
+                outputEl.textContent = 'Please enter both encrypted data and password';
+                outputEl.classList.add('error');
+                return;
+            }
+
+            try {
+                const combined = base64ToArrayBuffer(data);
+                
+                const salt = combined.slice(0, 16);
+                const iv = combined.slice(16, 28);
+                const ciphertext = combined.slice(28);
+
+                const key = await deriveKey(password, salt);
+
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: 'AES-GCM', iv: iv },
+                    key,
+                    ciphertext
+                );
+
+                const decoder = new TextDecoder();
+                outputEl.textContent = decoder.decode(decrypted);
+            } catch (e) {
+                outputEl.textContent = 'Decryption failed — wrong password or corrupted data';
+                outputEl.classList.add('error');
+            }
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => btn.textContent = '📋 Copy', 1500);
+            });
+        }
+
+        // Allow Enter key in password field to trigger encrypt
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') encrypt();
+        });
+    </script>
+</body>
+</html>
