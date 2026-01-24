@@ -168,8 +168,9 @@
     </div>
 
     <div class="info">
-        <strong>Phones:</strong> 
-        <textarea style="word-break: break-all; width: 500px;">xiYRMOwj3GPfvD3WXasWfiFQU3hnqeZG6sl8FVIlIhGyW3BTh9Qhi6ExpPX6l5t8ZX1F23Y4Yr4YUOV+uzmjhLgKZ7y92I2dtI1pTQ+5mzxh9G4Cx0/TFdMrgT2lX38y0RC/kprHwThvw0gPlw8ZecQMEhGp9XkH8HCn90E8FhI7RJR/vO1BSx7Ri8L+OOxGh6sDuoYnuTIXlBqEJ1kcfB6qu2p0WK9tNidvVoBejPqSGo4=</textarea>
+        <strong>Phones:</strong>
+        <textarea id="phonesText" style="word-break: break-all; width: 100%; box-sizing: border-box;">oljjZY09/h+VoXZ3TYKgtrFwyDt5dAeWi44VhIHqLGmwzTwl6P1w6fG27fV8rsJbFJH6ZZB+GmpZenhf0sLUi/RNDglfQButGO63F58JjZMFA3YHdOu8UVtKj0YGQbjzVukpcVlAwn4dR7CPmnfWoqESiQS1Nzph4U0+7Qd3Ww3S+ijx5Juw13jmi3Jz7/GQ8xaHMwCRiI9eB8aRCohI/j/dY0A/8cC2qJXdriv8Q7kpXMLs9v5KWBbuueeEqBiMs2LO592X1XzykgiT3szUDK+dFdrF8aliBK6UylxotRLvFmGrUBwmkiVKtQ==</textarea>
+        <button class="copy-btn" style="margin-top: 10px;" onclick="loadPhonesText()">Load to decrypt</button>
     </div>
         
     <div class="info">
@@ -308,6 +309,12 @@
         document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') encrypt();
         });
+
+        function loadPhonesText() {
+            const phonesText = document.getElementById('phonesText').value;
+            document.getElementById('data').value = phonesText;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
