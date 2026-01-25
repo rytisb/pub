@@ -172,6 +172,12 @@
         <textarea id="phonesText" style="word-break: break-all; width: 100%; box-sizing: border-box;">oljjZY09/h+VoXZ3TYKgtrFwyDt5dAeWi44VhIHqLGmwzTwl6P1w6fG27fV8rsJbFJH6ZZB+GmpZenhf0sLUi/RNDglfQButGO63F58JjZMFA3YHdOu8UVtKj0YGQbjzVukpcVlAwn4dR7CPmnfWoqESiQS1Nzph4U0+7Qd3Ww3S+ijx5Juw13jmi3Jz7/GQ8xaHMwCRiI9eB8aRCohI/j/dY0A/8cC2qJXdriv8Q7kpXMLs9v5KWBbuueeEqBiMs2LO592X1XzykgiT3szUDK+dFdrF8aliBK6UylxotRLvFmGrUBwmkiVKtQ==</textarea>
         <button class="copy-btn" style="margin-top: 10px;" onclick="loadPhonesText()">Load to decrypt</button>
     </div>
+
+    <div class="info">
+        <strong>M:</strong>
+        <textarea id="mText" style="word-break: break-all; width: 100%; box-sizing: border-box;">1URCzhlrHkulFqZ1ivQwYqPEFJQ37mPcnk0BMMDQ0myUztywJeozrcESl1zmM0EWUmj1b/XbuX4jyEH2w69nrnv3LTXLNnqU6ynUYAeuWjvxnSK/hiMPQVf/cfsXeEtAp0AebdTsJ4hHDj61qgfF5Le/jLnAUyNKwvg0pgbqBm/0aNiFsPGCv9d4aJShSbwm4v2DIWbz7BD7JCCad9mNuzdO4eqHSsydV/FU3G9XUDk2gHAI3RtKgg7h+zAiXLPlB8ZBNy30RLbX3JZYIVxFMEpcxrlWBUPNWmzjWJB0yYt1RahNqu9+Dj86EI8TLq/F2CXkuxv07DgQI8L/GVl8OQ==</textarea>
+        <button class="copy-btn" style="margin-top: 10px;" onclick="loadMText()">Load to decrypt</button>
+    </div>
         
     <div class="info">
         <strong>Files:</strong> 
@@ -313,6 +319,12 @@
         function loadPhonesText() {
             const phonesText = document.getElementById('phonesText').value;
             document.getElementById('data').value = phonesText;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function loadMText() {
+            const t = document.getElementById('mText').value;
+            document.getElementById('data').value = t;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
